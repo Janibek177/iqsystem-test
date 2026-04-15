@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>IQ TEST SYSTEM</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+body{
+margin:0;
+font-family:'Poppins', sans-serif;
+background:#0b1220;
+color:white;
+}
+
+/* background */
+body::before{
+content:"";
+position:fixed;
+width:200%;
+height:200%;
+background:url("https://cdn-icons-png.flaticon.com/512/4149/4149675.png");
+opacity:0.05;
+animation:move 30s linear infinite;
+z-index:-1;
+}
+
+@keyframes move{
+0%{transform:translate(0,0)}
+100%{transform:translate(-300px,-300px)}
+}
+
+/* TITLE */
+#logo{
+position:fixed;
+top:15px;
+left:15px;
+font-size:22px;
+font-weight:900;
+}
+
+/* NAV */
+nav{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+display:flex;
+justify-content:center;
+gap:40px;
+padding:18px;
+background:rgba(0,0,0,0.35);
+backdrop-filter:blur(10px);
+}
+
+nav span{
+cursor:pointer;
+font-size:20px;
+transition:0.2s;
+font-weight:600;
+}
+
+nav span:hover{
+transform:scale(1.2);
+}
+
+/* SETTINGS */
+.settings{
+position:fixed;
+top:70px;
+right:10px;
+}
+
+.panel{
+display:none;
+position:absolute;
+right:0;
+top:40px;
+background:rgba(0,0,0,0.6);
+backdrop-filter:blur(10px);
+padding:12px;
+border-radius:12px;
+width:180px;
+}
+
+/* PAGE */
+.page{
+display:none;
+height:100vh;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+.active{display:flex}
+
+.box{
+width:900px;
+background:rgba(255,255,255,0.05);
+padding:40px;
+border-radius:20px;
+}
+
+/* BUTTONS */
+button{
+padding:14px 22px;
+margin:10px;
+border-radius:12px;
+border:none;
+background:rgba(255,255,255,0.12);
+color:white;
+cursor:pointer;
+font-size:18px;
+font-weight:600;
+transition:0.25s;
+}
+
+button:hover{
+transform:scale(1.2);
+box-shadow:0 0 15px rgba(255,255,255,0.3);
+}
+
+/* TEXT */
+.q{font-size:26px;margin:20px}
+
+input{
+padding:10px;
+font-size:18px;
+border-radius:10px;
+border:none;
+background:rgba(255,255,255,0.1);
+color:white;
+text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="logo">🧠 IQ TEST SYSTEM</div>
+
+<nav>
+<span onclick="show('home')">🏠 HOME</span>
+<span onclick="show('math')">🔢 MATH</span>
+<span onclick="show('logic')">🧩 LOGIC</span>
+<span onclick="show('calc')">🧮 CALC</span>
+</nav>
+
+<!-- SETTINGS -->
+<div class="settings">
+<button onclick="toggleSettings()">⚙️</button>
+
+<div class="panel" id="panel">
+<p>🌍 Language</p>
+<button onclick="setLang('en')">English</button>
+<button onclick="setLang('ru')">Русский</button>
+<button onclick="setLang('uz')">O‘zbek</button>
+</div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
+<div class="box">
+<h1 id="homeTitle">WELCOME</h1>
+<p id="homeText"></p>
+</div>
+</div>
+
+<!-- MATH -->
+<div id="math" class="page">
+<div class="box">
+<h2 id="mathTitle">MATH TEST 🔢</h2>
+
+<button id="startM" onclick="startM()">🚀 START</button>
+
+<div id="mgame" style="display:none">
+<div class="q" id="mq"></div>
+<input id="ma">
+
+<br>
+<button onclick="skipM()">⬅ SKIP</button>
+<button onclick="answerM()">🎯 ANSWER</button>
+<button onclick="finishM()">➡ FINISH</button>
+</div>
+
+<div id="mres"></div>
+</div>
+</div>
+
+<!-- LOGIC -->
+<div id="logic" class="page">
+<div class="box">
+<h2 id="logicTitle">LOGIC TEST 🧩</h2>
+
+<button id="startL" onclick="startL()">🚀 START</button>
+
+<div id="lgame" style="display:none">
+<div class="q" id="lq"></div>
+<input id="la">
+
+<br>
+<button onclick="skipL()">⬅ SKIP</button>
+<button onclick="answerL()">🎯 ANSWER</button>
+<button onclick="finishL()">➡ FINISH</button>
+</div>
+
+<div id="lres"></div>
+</div>
+</div>
+
+<!-- CALC -->
+<div id="calc" class="page">
+<div class="box">
+<h2>🧮 CALCULATOR</h2>
+
+<input id="total">
+<br><br>
+<button onclick="calcIQ()">CHECK IQ</button>
+
+<h2 id="out"></h2>
+</div>
+</div>
+
+<script>
+
+let lang="en";
+
+/* TEXT FULL FIX */
+const T={
+en:{
+home:"🧠 Welcome to IQ Test System 🚀\n🔢 Math Test (20 Q)\n🧩 Logic Test (20 Q)\n🔥 Try your best!",
+math:["12+0","12+1","12+2","12+3","12+4","12+5","12+6","12+7","12+8","12+9","12+10","12+11","12+12","12+13","12+14","12+15","12+16","12+17","12+18","12+19"],
+logic:["Fire is hot?","Sky is blue?","2+2=5?","Water wet?","Earth round?","Sun cold?","Dog is animal?","Bird can fly?","Ice hot?","Math easy?","Car fly?","Fish swim?","Tree fly?","Night dark?","1>2?","Snow cold?","Apple fruit?","Fire cold?","Human alive?","Sun bright?"]
+},
+ru:{
+home:"🧠 Добро пожаловать в IQ тест 🚀\n🔢 Математика (20)\n🧩 Логика (20)\n🔥 Удачи!",
+math:["12+0","12+1","12+2","12+3","12+4","12+5","12+6","12+7","12+8","12+9","12+10","12+11","12+12","12+13","12+14","12+15","12+16","12+17","12+18","12+19"],
+logic:["Огонь горячий?","Небо синее?","2+2=5?","Вода мокрая?","Земля круглая?","Солнце холодное?","Собака животное?","Птица летает?","Лёд горячий?","Математика лёгкая?","Машина летает?","Рыба плавает?","Дерево летает?","Ночь тёмная?","1>2?","Снег холодный?","Яблоко фрукт?","Огонь холодный?","Человек жив?","Солнце яркое?"]
+},
+uz:{
+home:"🧠 IQ test tizimiga xush kelibsiz 🚀\n🔢 Matematika (20)\n🧩 Mantiq (20)\n🔥 Omad!",
+math:["12+0","12+1","12+2","12+3","12+4","12+5","12+6","12+7","12+8","12+9","12+10","12+11","12+12","12+13","12+14","12+15","12+16","12+17","12+18","12+19"],
+logic:["Olov issiqmi?","Osmon ko‘kmi?","2+2=5?","Suv nammi?","Yer yumaloqmi?","Quyosh sovuqmi?","It hayvonmi?","Qush uchadimi?","Muz issiqmi?","Matematika osonmi?","Mashina uchadimi?","Baliq suzadimi?","Daraxt uchadimi?","Tun qorong‘imi?","1>2?","Qor sovuqmi?","Olma meva?","Olov sovuqmi?","Inson tirikmi?","Quyosh yorug‘mi?"]
+}
+};
+
+/* APPLY */
+function setLang(l){
+lang=l;
+document.getElementById("homeTitle").innerText=T[l].home;
+document.getElementById("homeText").innerText=T[l].home;
+}
+
+/* SETTINGS */
+function toggleSettings(){
+let p=document.getElementById("panel");
+p.style.display=p.style.display==="block"?"none":"block";
+}
+
+/* NAV */
+function show(p){
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+document.getElementById(p).classList.add("active");
+}
+
+/* MATH */
+let i=0,s=0;
+
+function startM(){
+i=0;s=0;
+document.getElementById("mgame").style.display="block";
+document.getElementById("startM").style.display="none";
+showM();
+}
+
+function showM(){
+document.getElementById("mq").innerText=T[lang].math[i];
+}
+
+function answerM(){
+let v=Number(document.getElementById("ma").value);
+if(v===12+i)s++;
+i++;
+if(i<20)showM();else finishM();
+}
+
+function skipM(){i++;if(i<20)showM();else finishM();}
+
+function finishM(){
+document.getElementById("mgame").style.display="none";
+document.getElementById("mres").innerHTML="IQ1: "+Math.round((s/20)*100);
+}
+
+/* LOGIC */
+let li=0,ls=0;
+
+function startL(){
+li=0;ls=0;
+document.getElementById("lgame").style.display="block";
+document.getElementById("startL").style.display="none";
+showL();
+}
+
+function showL(){
+document.getElementById("lq").innerText=T[lang].logic[li];
+}
+
+function answerL(){
+let v=document.getElementById("la").value.toLowerCase();
+if(v==="yes"||v==="да"||v==="ha")ls++;
+li++;
+if(li<20)showL();else finishL();
+}
+
+function skipL(){li++;if(li<20)showL();else finishL();}
+
+function finishL(){
+document.getElementById("lgame").style.display="none";
+document.getElementById("lres").innerHTML="IQ2: "+Math.round((ls/20)*100);
+}
+
+/* CALC */
+function calcIQ(){
+let t=Number(document.getElementById("total").value);
+document.getElementById("out").innerText="FINAL IQ: "+t;
+}
+
+/* INIT */
+setLang("en");
+
+</script>
+
+</body>
+</html>
